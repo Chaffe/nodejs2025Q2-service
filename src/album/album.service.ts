@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { DatabaseService } from '../common/database/database.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
+import { AppService } from '../app.service';
 
 @Injectable()
 export class AlbumService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(private readonly db: AppService) {}
 
   findAll(): Album[] {
     return this.db.albums;
@@ -57,13 +57,11 @@ export class AlbumService {
       throw new NotFoundException('Album not found');
     }
 
-    // Remove from favorites
     const favIndex = this.db.favorites.albums.indexOf(id);
     if (favIndex !== -1) {
       this.db.favorites.albums.splice(favIndex, 1);
     }
 
-    // Nullify albumId in tracks
     this.db.tracks.forEach((track) => {
       if (track.albumId === id) {
         track.albumId = null;

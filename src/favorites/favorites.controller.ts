@@ -42,4 +42,16 @@ export class FavoritesController {
   removeAlbum(@Param('id', ParseUUIDPipe) id: string) {
     return this.favoritesService.removeAlbum(id);
   }
+
+  @Post('artist/:id')
+  @HttpCode(HttpStatus.CREATED)
+  addArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favoritesService.addArtist(id);
+  }
+
+  @Delete('artist/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favoritesService.removeArtist(id);
+  }
 }

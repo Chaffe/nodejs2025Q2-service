@@ -3,14 +3,17 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { DatabaseService } from '../common/database/database.service';
 import { FavoritesResponse } from './entities/favorites.entity';
+import { AppService } from '../app.service';
 
 @Injectable()
 export class FavoritesService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(private readonly db: AppService) {}
 
   findAll(): FavoritesResponse {
+    const artists = this.db.artists.filter((artist) =>
+      this.db.favorites.artists.includes(artist.id),
+    );
     const albums = this.db.albums.filter((album) =>
       this.db.favorites.albums.includes(album.id),
     );
@@ -18,7 +21,7 @@ export class FavoritesService {
       this.db.favorites.tracks.includes(track.id),
     );
 
-    return { albums, tracks };
+    return { artists, albums, tracks };
   }
 
   addTrack(id: string): { message: string } {
@@ -61,5 +64,26 @@ export class FavoritesService {
       throw new NotFoundException('Album not found in favorites');
     }
     this.db.favorites.albums.splice(index, 1);
+  }
+
+  addArtist(id: string): { message: string } {
+    const artist = this.db.artists.find((a) => a.id === id);
+    if (!artist) {
+      throw new UnprocessableEntityException('Artist not found');
+    }
+
+    if (!this.db.favorites.artists.includes(id)) {
+      this.db.favorites.artists.push(id);
+    }
+
+    return { message: 'Artist added to favorites' };
+  }
+
+  removeArtist(id: string): void {
+    const index = this.db.favorites.artists.indexOf(id);
+    if (index === -1) {
+      throw new NotFoundException('Artist not found in favorites');
+    }
+    this.db.favorites.artists.splice(index, 1);
   }
 }

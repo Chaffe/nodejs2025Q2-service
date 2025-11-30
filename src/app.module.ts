@@ -1,20 +1,21 @@
-import { Module } from '@nestjs/common';
-import { DatabaseModule } from './common/database/database.module';
+import { Global, Module } from '@nestjs/common';
+import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
+import { ArtistModule } from './artist/artist.module';
+import { AlbumModule } from './album/album.module';
 import { TrackModule } from './track/track.module';
 import { FavoritesModule } from './favorites/favorites.module';
-import { DatabaseService } from './common/database/database.service';
-import { AlbumModule } from './album/album.module';
 
+@Global()
 @Module({
   imports: [
-    DatabaseModule,
     UserModule,
-    TrackModule,
+    ArtistModule,
     AlbumModule,
+    TrackModule,
     FavoritesModule,
   ],
-  providers: [DatabaseService],
-  exports: [DatabaseService],
+  providers: [AppService],
+  exports: [AppService],
 })
 export class AppModule {}

@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { DatabaseService } from '../common/database/database.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
+import { AppService } from '../app.service';
 
 @Injectable()
 export class TrackService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(private readonly db: AppService) {}
 
   findAll(): Track[] {
     return this.db.tracks;
@@ -59,7 +59,6 @@ export class TrackService {
       throw new NotFoundException('Track not found');
     }
 
-    // Remove from favorites
     const favIndex = this.db.favorites.tracks.indexOf(id);
     if (favIndex !== -1) {
       this.db.favorites.tracks.splice(favIndex, 1);

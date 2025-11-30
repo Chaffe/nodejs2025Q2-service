@@ -4,14 +4,14 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { DatabaseService } from '../common/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User, UserResponse } from './entities/user.entity';
+import { AppService } from '../app.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(private readonly db: AppService) {}
 
   private toResponse(user: User): UserResponse {
     const { password, ...response } = user;
