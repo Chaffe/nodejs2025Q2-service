@@ -9,4 +9,3 @@ export interface UserResponse {
 export interface User extends UserResponse {
   password: string;
 }
-
