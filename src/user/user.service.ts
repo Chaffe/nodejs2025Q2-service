@@ -14,8 +14,14 @@ export class UserService {
   constructor(private readonly db: AppService) {}
 
   private toResponse(user: User): UserResponse {
-    const { password, ...response } = user;
-    return response;
+    const { id, login, version, createdAt, updatedAt } = user;
+    return {
+      id,
+      login,
+      version,
+      createdAt,
+      updatedAt,
+    };
   }
 
   findAll(): UserResponse[] {
@@ -44,7 +50,10 @@ export class UserService {
     return this.toResponse(newUser);
   }
 
-  updatePassword(id: string, updatePasswordDto: UpdatePasswordDto): UserResponse {
+  updatePassword(
+    id: string,
+    updatePasswordDto: UpdatePasswordDto,
+  ): UserResponse {
     const userIndex = this.db.users.findIndex((u) => u.id === id);
 
     if (userIndex === -1) {
