@@ -1,69 +1,61 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { AppService } from '../app.service';
 
 @Injectable()
 export class TrackService {
-  constructor(private readonly db: AppService) {}
+  constructor(
+    @InjectRepository(Track)
+    private readonly trackRepository: Repository<Track>,
+  ) {}
 
-  findAll(): Track[] {
-    return this.db.tracks;
+  async findAll(): Promise<Track[]> {
+    return this.trackRepository.find();
   }
 
-  findOne(id: string): Track {
-    const track = this.db.tracks.find((t) => t.id === id);
+  async findOne(id: string): Promise<Track> {
+    const track = await this.trackRepository.findOne({ where: { id } });
     if (!track) {
       throw new NotFoundException('Track not found');
     }
     return track;
   }
 
-  create(createTrackDto: CreateTrackDto): Track {
-    const newTrack: Track = {
-      id: randomUUID(),
+  async create(createTrackDto: CreateTrackDto): Promise<Track> {
+    const track = this.trackRepository.create({
       name: createTrackDto.name,
+      duration: createTrackDto.duration,
       artistId: createTrackDto.artistId ?? null,
       albumId: createTrackDto.albumId ?? null,
-      duration: createTrackDto.duration,
-    };
-    this.db.tracks.push(newTrack);
-    return newTrack;
+    });
+    return this.trackRepository.save(track);
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto): Track {
-    const trackIndex = this.db.tracks.findIndex((t) => t.id === id);
+  async update(id: string, updateTrackDto: UpdateTrackDto): Promise<Track> {
+    const track = await this.trackRepository.findOne({ where: { id } });
 
-    if (trackIndex === -1) {
+    if (!track) {
       throw new NotFoundException('Track not found');
     }
 
-    const updatedTrack: Track = {
-      id: this.db.tracks[trackIndex].id,
-      name: updateTrackDto.name,
-      artistId: updateTrackDto.artistId ?? null,
-      albumId: updateTrackDto.albumId ?? null,
-      duration: updateTrackDto.duration,
-    };
+    track.name = updateTrackDto.name;
+    track.duration = updateTrackDto.duration;
+    track.artistId = updateTrackDto.artistId ?? null;
+    track.albumId = updateTrackDto.albumId ?? null;
 
-    this.db.tracks[trackIndex] = updatedTrack;
-    return updatedTrack;
+    return this.trackRepository.save(track);
   }
 
-  remove(id: string): void {
-    const trackIndex = this.db.tracks.findIndex((t) => t.id === id);
+  async remove(id: string): Promise<void> {
+    const track = await this.trackRepository.findOne({ where: { id } });
 
-    if (trackIndex === -1) {
+    if (!track) {
       throw new NotFoundException('Track not found');
     }
 
-    const favIndex = this.db.favorites.tracks.indexOf(id);
-    if (favIndex !== -1) {
-      this.db.favorites.tracks.splice(favIndex, 1);
-    }
-
-    this.db.tracks.splice(trackIndex, 1);
+    await this.trackRepository.remove(track);
   }
 }

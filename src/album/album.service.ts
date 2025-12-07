@@ -1,73 +1,59 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
-import { AppService } from '../app.service';
 
 @Injectable()
 export class AlbumService {
-  constructor(private readonly db: AppService) {}
+  constructor(
+    @InjectRepository(Album)
+    private readonly albumRepository: Repository<Album>,
+  ) {}
 
-  findAll(): Album[] {
-    return this.db.albums;
+  async findAll(): Promise<Album[]> {
+    return this.albumRepository.find();
   }
 
-  findOne(id: string): Album {
-    const album = this.db.albums.find((a) => a.id === id);
+  async findOne(id: string): Promise<Album> {
+    const album = await this.albumRepository.findOne({ where: { id } });
     if (!album) {
       throw new NotFoundException('Album not found');
     }
     return album;
   }
 
-  create(createAlbumDto: CreateAlbumDto): Album {
-    const newAlbum: Album = {
-      id: randomUUID(),
+  async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
+    const album = this.albumRepository.create({
       name: createAlbumDto.name,
       year: createAlbumDto.year,
       artistId: createAlbumDto.artistId ?? null,
-    };
-    this.db.albums.push(newAlbum);
-    return newAlbum;
-  }
-
-  update(id: string, updateAlbumDto: UpdateAlbumDto): Album {
-    const albumIndex = this.db.albums.findIndex((a) => a.id === id);
-
-    if (albumIndex === -1) {
-      throw new NotFoundException('Album not found');
-    }
-
-    const updatedAlbum: Album = {
-      ...this.db.albums[albumIndex],
-      name: updateAlbumDto.name,
-      year: updateAlbumDto.year,
-      artistId: updateAlbumDto.artistId ?? this.db.albums[albumIndex].artistId,
-    };
-
-    this.db.albums[albumIndex] = updatedAlbum;
-    return updatedAlbum;
-  }
-
-  remove(id: string): void {
-    const albumIndex = this.db.albums.findIndex((a) => a.id === id);
-
-    if (albumIndex === -1) {
-      throw new NotFoundException('Album not found');
-    }
-
-    const favIndex = this.db.favorites.albums.indexOf(id);
-    if (favIndex !== -1) {
-      this.db.favorites.albums.splice(favIndex, 1);
-    }
-
-    this.db.tracks.forEach((track) => {
-      if (track.albumId === id) {
-        track.albumId = null;
-      }
     });
+    return this.albumRepository.save(album);
+  }
 
-    this.db.albums.splice(albumIndex, 1);
+  async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
+    const album = await this.albumRepository.findOne({ where: { id } });
+
+    if (!album) {
+      throw new NotFoundException('Album not found');
+    }
+
+    album.name = updateAlbumDto.name;
+    album.year = updateAlbumDto.year;
+    album.artistId = updateAlbumDto.artistId ?? album.artistId;
+
+    return this.albumRepository.save(album);
+  }
+
+  async remove(id: string): Promise<void> {
+    const album = await this.albumRepository.findOne({ where: { id } });
+
+    if (!album) {
+      throw new NotFoundException('Album not found');
+    }
+
+    await this.albumRepository.remove(album);
   }
 }
