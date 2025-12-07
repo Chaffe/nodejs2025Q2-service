@@ -22,6 +22,7 @@ services:
     volumes:
       - ./src:/app/src
       - ./doc:/app/doc
+    command: npm run start:dev
     depends_on:
       postgres:
         condition: service_healthy

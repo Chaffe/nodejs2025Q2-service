@@ -1,14 +1,12 @@
-import { Global, Module } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
 import { TrackModule } from './track/track.module';
 import { FavoritesModule } from './favorites/favorites.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './database/data-source';
 
-@Global()
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -21,7 +19,5 @@ import { dataSourceOptions } from './database/data-source';
     TrackModule,
     FavoritesModule,
   ],
-  providers: [AppService],
-  exports: [AppService],
 })
 export class AppModule {}
