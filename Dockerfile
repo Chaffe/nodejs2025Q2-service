@@ -47,8 +47,10 @@ COPY package*.json ./
 # Install all dependencies
 RUN npm ci
 
-# Copy source code
-COPY . .
+# Copy all config files (but src will be mounted as volume)
+COPY nest-cli.json ./
+COPY tsconfig*.json ./
+COPY doc ./doc
 
 # Expose the application port
 EXPOSE 4000
