@@ -58,7 +58,9 @@ export class FavoritesService {
       where: { trackId: id },
     });
     if (!existing) {
-      const favoriteTrack = this.favoriteTrackRepository.create({ trackId: id });
+      const favoriteTrack = this.favoriteTrackRepository.create({
+        trackId: id,
+      });
       await this.favoriteTrackRepository.save(favoriteTrack);
     }
 
@@ -85,7 +87,9 @@ export class FavoritesService {
       where: { albumId: id },
     });
     if (!existing) {
-      const favoriteAlbum = this.favoriteAlbumRepository.create({ albumId: id });
+      const favoriteAlbum = this.favoriteAlbumRepository.create({
+        albumId: id,
+      });
       await this.favoriteAlbumRepository.save(favoriteAlbum);
     }
 
