@@ -5,10 +5,16 @@ import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
 import { TrackModule } from './track/track.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from './database/data-source';
 
 @Global()
 @Module({
   imports: [
+    TypeOrmModule.forRoot({
+      ...dataSourceOptions,
+      autoLoadEntities: true,
+    }),
     UserModule,
     ArtistModule,
     AlbumModule,
