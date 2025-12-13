@@ -1,5 +1,9 @@
 # Home Library Service
 
+## Docker Hub
+
+🐳 **Docker Hub Repository:** [chaffe01/home-library-app](https://hub.docker.com/r/chaffe01/home-library-app)
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
@@ -19,20 +23,13 @@
 
 ## Running application
 
-Create a `.env` file in the root directory and add the following environment variables:
-
-```
-PORT=4000
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=admin
-```
+Copy an `.env` file in the root directory with environment variables from `.env.example`
 
 Build and start the application:
 
-1. Build the application: `npm run docker:build` or `docker compose build`
-2. Start the application: `npm run docker:up` `docker compose up`
+1. Pull the Docker tag: `docker pull chaffe01/home-library-app:latest`
+2. Build the application: `npm run docker:build` or `docker compose build`
+3. Start the application: `npm run docker:up` `docker compose up`
 
 By default, the application will run on port 4000, in development mode, so it will automatically restart when you make changes to the code in the `src` directory.
 
