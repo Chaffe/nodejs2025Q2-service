@@ -36,6 +36,18 @@ By default, the application will run on port 4000, in development mode, so it wi
 To stop the application:
 `npm run docker:down` or `docker compose down`
 
+## Migration Commands:
+
+### Important Notes
+Database must be running — Make sure PostgreSQL is up before running migrations. If using Docker:
+`npm run docker:up`
+
+
+1. Migration running: `npm run migration:run`
+2. Generate a new migration: `npm run migration:generate src/database/migrations/<YourMigrationName>`
+3. Create an empty migration: `npm run migration:create src/database/migrations/<YourMigrationName>`
+4. Revert the last migration: `npm run migration:revert`
+
 ## Testing
 
 After starting the application, you can run the tests:
