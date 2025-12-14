@@ -1,0 +1,63 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: home-library-app
+    restart: unless-stopped
+    ports:
+      - '${PORT:-4000}:4000'
+    environment:
+      - PORT=${PORT:-4000}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-home_library}
+      - TYPEORM_SYNCHRONIZE=${TYPEORM_SYNCHRONIZE:-false}
+      - TYPEORM_LOGGING=${TYPEORM_LOGGING:-false}
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+      - WATCHPACK_POLLING=true
+      - TSC_WATCHFILE=UseFsEventsWithFallbackDynamicPolling
+    volumes:
+      - ./src:/app/src:delegated
+      - ./doc:/app/doc:delegated
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./nest-cli.json:/app/nest-cli.json:ro
+    command: npm run start:dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - home-library-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: home-library-db
+    restart: unless-stopped
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-home_library}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - postgres-logs:/var/log/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-home_library}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - home-library-network
+
+networks:
+  home-library-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  postgres-logs:
