@@ -4,6 +4,34 @@
 
 🐳 **Docker Hub Repository:** [chaffe01/home-library-app](https://hub.docker.com/r/chaffe01/home-library-app)
 
+## Quick Start (For Reviewers)
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Create .env file
+Create a `.env` file manually with the following content:
+
+```bash
+PORT=4000
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=home_library
+TYPEORM_SYNCHRONIZE=true
+TYPEORM_LOGGING=false
+```
+
+# 3. Build and start Docker containers
+npm run docker:build
+npm run docker:up
+
+# 4. Wait for containers to be ready (5-10 seconds), then run tests
+npm run test
+```
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
@@ -19,22 +47,54 @@
 
 ## Installing NPM modules
 
-`npm install`
+```bash
+npm install
+```
 
 ## Running application
 
-Copy an `.env` file in the root directory with environment variables from `.env.example`
+### 1. Environment Setup
 
-Build and start the application:
+Create a `.env` file manually with the following content:
 
-1. Pull the Docker tag: `docker pull chaffe01/home-library-app:latest`
-2. Build the application: `npm run docker:build` or `docker compose build`
-3. Start the application: `npm run docker:up` `docker compose up`
+```bash
+PORT=4000
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=home_library
+TYPEORM_SYNCHRONIZE=true
+TYPEORM_LOGGING=false
+```
+
+### 2. Build and Start Docker Containers
+
+```bash
+# Build the application
+npm run docker:build
+
+# Start the application
+npm run docker:up
+```
+
+### 3. Wait for Services to be Ready
+
+Wait a few seconds for PostgreSQL to initialize. You can check the logs:
+
+```bash
+npm run docker:logs
+```
+
+Look for messages indicating the app is running on port 4000.
 
 By default, the application will run on port 4000, in development mode, so it will automatically restart when you make changes to the code in the `src` directory.
 
-To stop the application:
-`npm run docker:down` or `docker compose down`
+### 4. Stop the Application
+
+```bash
+npm run docker:down
+```
 
 ## Migration Commands:
 
@@ -50,11 +110,31 @@ Database must be running — Make sure PostgreSQL is up before running migration
 
 ## Testing
 
-After starting the application, you can run the tests:
+**Important:** Make sure the Docker containers are running before executing tests.
 
-To run all tests without authorization
+### Prerequisites for Testing
 
-`npm run test`
+1. Ensure Docker containers are running:
+   ```bash
+   npm run docker:up
+   ```
+
+2. Wait for the application to be ready (check logs):
+   ```bash
+   npm run docker:logs
+   ```
+   
+   Look for: `Application is running on: http://localhost:4000`
+
+### Run Tests
+
+To run all tests without authorization:
+
+```bash
+npm run test
+```
+
+**Note:** Tests connect to `localhost:4000`, so the Docker container must be exposing this port.
 
 ### Auto-fix and format
 
