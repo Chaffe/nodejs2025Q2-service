@@ -4,34 +4,6 @@
 
 🐳 **Docker Hub Repository:** [chaffe01/home-library-app](https://hub.docker.com/r/chaffe01/home-library-app)
 
-## Quick Start (For Reviewers)
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Create .env file
-Create a `.env` file manually with the following content:
-
-```bash
-PORT=4000
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=home_library
-TYPEORM_SYNCHRONIZE=true
-TYPEORM_LOGGING=false
-```
-
-# 3. Build and start Docker containers
-npm run docker:build
-npm run docker:up
-
-# 4. Wait for containers to be ready (5-10 seconds), then run tests
-npm run test
-```
-
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
@@ -44,20 +16,15 @@ npm run test
 2. `cd ./nodejs2025Q2-service`
 3. `git checkout "feature/containerization-and-database"`
 
-
-## Installing NPM modules
+## Quick Start (For Reviewers)
 
 ```bash
+# 1. Install dependencies
 npm install
-```
 
-## Running application
-
-### 1. Environment Setup
-
+# 2. Create .env file
 Create a `.env` file manually with the following content:
 
-```bash
 PORT=4000
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
@@ -68,29 +35,22 @@ TYPEORM_SYNCHRONIZE=true
 TYPEORM_LOGGING=false
 ```
 
-### 2. Build and Start Docker Containers
-
 ```bash
-# Build the application
+# 3. Build and start Docker containers
 npm run docker:build
-
-# Start the application
 npm run docker:up
+
+# 4. Wait for the application to be ready (check logs):
+   npm run docker:logs
+   
+# Look for: `Application is running on: http://localhost:4000`
+# **Note:** If you have problems with locale running, try to launch migrations regarding the **Migration Guide** and return to the Docker container running
+
+# 5. Wait for containers to be ready (5-10 seconds), then run tests
+npm run test
 ```
 
-### 3. Wait for Services to be Ready
-
-Wait a few seconds for PostgreSQL to initialize. You can check the logs:
-
-```bash
-npm run docker:logs
-```
-
-Look for messages indicating the app is running on port 4000.
-
-By default, the application will run on port 4000, in development mode, so it will automatically restart when you make changes to the code in the `src` directory.
-
-### 4. Stop the Application
+## 4. Stop the Application
 
 ```bash
 npm run docker:down
@@ -123,8 +83,10 @@ Database must be running — Make sure PostgreSQL is up before running migration
    ```bash
    npm run docker:logs
    ```
-   
+
    Look for: `Application is running on: http://localhost:4000`
+
+**Note:** If you have problems with locale running, try to launch migrations regarding the **Migration Guide** and return to the Docker container running
 
 ### Run Tests
 
