@@ -4,6 +4,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User, UserResponse } from './entities/user.entity';
@@ -36,12 +37,18 @@ export class UserService {
     return this.toResponse(user);
   }
 
-  create(createUserDto: CreateUserDto): UserResponse {
+  async create(createUserDto: CreateUserDto): Promise<UserResponse> {
+    const saltRounds = parseInt(process.env.CRYPT_SALT || '10', 10);
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      saltRounds,
+    );
+
     const timestamp = Date.now();
     const newUser: User = {
       id: randomUUID(),
       login: createUserDto.login,
-      password: createUserDto.password,
+      password: hashedPassword,
       version: 1,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -50,10 +57,10 @@ export class UserService {
     return this.toResponse(newUser);
   }
 
-  updatePassword(
+  async updatePassword(
     id: string,
     updatePasswordDto: UpdatePasswordDto,
-  ): UserResponse {
+  ): Promise<UserResponse> {
     const userIndex = this.db.users.findIndex((u) => u.id === id);
 
     if (userIndex === -1) {
@@ -62,11 +69,20 @@ export class UserService {
 
     const user = this.db.users[userIndex];
 
-    if (user.password !== updatePasswordDto.oldPassword) {
+    const isPasswordValid = await bcrypt.compare(
+      updatePasswordDto.oldPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
       throw new ForbiddenException('Old password is incorrect');
     }
 
-    user.password = updatePasswordDto.newPassword;
+    const saltRounds = parseInt(process.env.CRYPT_SALT || '10', 10);
+    user.password = await bcrypt.hash(
+      updatePasswordDto.newPassword,
+      saltRounds,
+    );
     user.version += 1;
     user.updatedAt = Date.now();
 

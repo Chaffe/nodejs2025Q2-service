@@ -23,9 +23,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      message = typeof exceptionResponse === 'string'
-        ? exceptionResponse
-        : exceptionResponse;
+      message =
+        typeof exceptionResponse === 'string'
+          ? exceptionResponse
+          : exceptionResponse;
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       message = 'Internal server error';
@@ -36,9 +37,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       method: request.method,
-      message: typeof message === 'object' && 'message' in message
-        ? (message as { message: string }).message
-        : message,
+      message:
+        typeof message === 'object' && 'message' in message
+          ? (message as { message: string }).message
+          : message,
     };
 
     const errorMessage = `${request.method} ${request.url} - Status: ${status} - Error: ${JSON.stringify(message)}`;

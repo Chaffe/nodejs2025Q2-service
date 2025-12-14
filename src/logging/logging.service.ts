@@ -25,7 +25,10 @@ export class LoggingService {
   private readonly logLevel: number;
 
   constructor() {
-    this.maxFileSizeKB = parseInt(process.env.LOG_MAX_FILE_SIZE_KB || '100', 10);
+    this.maxFileSizeKB = parseInt(
+      process.env.LOG_MAX_FILE_SIZE_KB || '100',
+      10,
+    );
     this.logLevel = parseInt(process.env.LOG_LEVEL || '2', 10);
 
     if (!existsSync(this.logDir)) {
@@ -37,7 +40,11 @@ export class LoggingService {
     return level <= this.logLevel;
   }
 
-  private formatMessage(level: string, message: string, context?: string): string {
+  private formatMessage(
+    level: string,
+    message: string,
+    context?: string,
+  ): string {
     const timestamp = new Date().toISOString();
     const contextStr = context ? `[${context}]` : '';
     return `${timestamp} [${level.toUpperCase()}] ${contextStr} ${message}\n`;
@@ -61,7 +68,11 @@ export class LoggingService {
     appendFileSync(filePath, message);
   }
 
-  private writeLog(level: LogLevelPriority, message: string, context?: string): void {
+  private writeLog(
+    level: LogLevelPriority,
+    message: string,
+    context?: string,
+  ): void {
     if (!this.shouldLog(level)) return;
 
     const levelName = LogLevelPriority[level];
@@ -97,12 +108,21 @@ export class LoggingService {
     this.writeLog(LogLevelPriority.verbose, message, context);
   }
 
-  logRequest(request: { url: string; method: string; query: object; body: object }): void {
+  logRequest(request: {
+    url: string;
+    method: string;
+    query: object;
+    body: object;
+  }): void {
     const message = `Incoming Request: ${request.method} ${request.url} | Query: ${JSON.stringify(request.query)} | Body: ${JSON.stringify(request.body)}`;
     this.log(message, 'HTTP');
   }
 
-  logResponse(request: { url: string; method: string }, statusCode: number, responseTime: number): void {
+  logResponse(
+    request: { url: string; method: string },
+    statusCode: number,
+    responseTime: number,
+  ): void {
     const message = `Response: ${request.method} ${request.url} | Status: ${statusCode} | Time: ${responseTime}ms`;
     this.log(message, 'HTTP');
   }

@@ -16,7 +16,7 @@ interface TokenPayload {
   login: string;
 }
 
-interface Tokens {
+export interface Tokens {
   accessToken: string;
   refreshToken: string;
 }
@@ -73,7 +73,10 @@ export class AuthService {
       throw new ForbiddenException('Authentication failed: user not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
 
     if (!isPasswordValid) {
       throw new ForbiddenException('Authentication failed: wrong password');
@@ -93,9 +96,12 @@ export class AuthService {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync<TokenPayload>(refreshToken, {
-        secret: process.env.JWT_SECRET_REFRESH_KEY,
-      });
+      const payload = await this.jwtService.verifyAsync<TokenPayload>(
+        refreshToken,
+        {
+          secret: process.env.JWT_SECRET_REFRESH_KEY,
+        },
+      );
 
       const user = this.db.users.find((u) => u.id === payload.userId);
 
@@ -110,7 +116,10 @@ export class AuthService {
 
       return this.generateTokens(newPayload);
     } catch (error) {
-      if (error instanceof ForbiddenException || error instanceof UnauthorizedException) {
+      if (
+        error instanceof ForbiddenException ||
+        error instanceof UnauthorizedException
+      ) {
         throw error;
       }
       throw new ForbiddenException('Refresh token is invalid or expired');

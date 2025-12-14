@@ -11,6 +11,14 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
+  private readonly publicPaths = [
+    '/',
+    '/doc',
+    '/auth/signup',
+    '/auth/login',
+    '/auth/refresh',
+  ];
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly reflector: Reflector,
@@ -27,6 +35,17 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
+
+    // Check if path is in public paths list (for routes not using @Public() decorator)
+    const path = request.path;
+    if (
+      this.publicPaths.some(
+        (publicPath) => path === publicPath || path.startsWith('/doc'),
+      )
+    ) {
+      return true;
+    }
+
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
