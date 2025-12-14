@@ -14,7 +14,6 @@ async function bootstrap() {
 
   const loggingService = app.get(LoggingService);
 
-  // Handle uncaughtException
   process.on('uncaughtException', (error: Error) => {
     loggingService.error(
       `Uncaught Exception: ${error.message}`,
@@ -24,7 +23,6 @@ async function bootstrap() {
     process.exit(1);
   });
 
-  // Handle unhandledRejection
   process.on('unhandledRejection', (reason: unknown) => {
     const message = reason instanceof Error ? reason.message : String(reason);
     const stack = reason instanceof Error ? reason.stack : undefined;

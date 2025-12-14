@@ -36,7 +36,6 @@ export class JwtAuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<Request>();
 
-    // Check if path is in public paths list (for routes not using @Public() decorator)
     const path = request.path;
     if (
       this.publicPaths.some(

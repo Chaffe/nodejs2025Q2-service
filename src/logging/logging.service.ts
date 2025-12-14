@@ -108,13 +108,21 @@ export class LoggingService {
     this.writeLog(LogLevelPriority.verbose, message, context);
   }
 
+  private safeStringify(obj: unknown): string {
+    try {
+      return JSON.stringify(obj);
+    } catch {
+      return '[Unable to stringify]';
+    }
+  }
+
   logRequest(request: {
     url: string;
     method: string;
     query: object;
     body: object;
   }): void {
-    const message = `Incoming Request: ${request.method} ${request.url} | Query: ${JSON.stringify(request.query)} | Body: ${JSON.stringify(request.body)}`;
+    const message = `Incoming Request: ${request.method} ${request.url} | Query: ${this.safeStringify(request.query)} | Body: ${this.safeStringify(request.body)}`;
     this.log(message, 'HTTP');
   }
 
