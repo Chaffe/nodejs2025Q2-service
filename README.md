@@ -25,6 +25,21 @@ npm run start:dev
 
 ## Testing
 
+Create the `.env` file on base of `.env.example` file with the next variables:
+```
+PORT=4000
+
+LOG_LEVEL=2
+LOG_MAX_FILE_SIZE_KB=100
+
+JWT_SECRET_KEY=your-super-secret-key-change-in-production
+JWT_SECRET_REFRESH_KEY=your-refresh-secret-key-change-in-production
+TOKEN_EXPIRE_TIME=1h
+TOKEN_REFRESH_EXPIRE_TIME=24h
+
+CRYPT_SALT=10
+```
+
 **Important:** Make sure the application is running before executing tests. If application isn't started, enter:
 ```
 npm run start:dev
