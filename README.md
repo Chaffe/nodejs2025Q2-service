@@ -7,9 +7,9 @@
 
 ## Downloading
 
-```
-git clone {repository URL}
-```
+1. `git clone git@github.com:Chaffe/nodejs2025Q2-service.git`
+2. `cd ./nodejs2025Q2-service`
+3. `git checkout "feature/authentication"`
 
 ## Installing NPM modules
 
@@ -20,39 +20,49 @@ npm install
 ## Running application
 
 ```
-npm start
+npm run start:dev
 ```
-
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Testing
 
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
+Create the `.env` file on base of `.env.example` file with the next variables:
 ```
-npm run test
+PORT=4000
+
+LOG_LEVEL=2
+LOG_MAX_FILE_SIZE_KB=100
+
+JWT_SECRET_KEY=your-super-secret-key-change-in-production
+JWT_SECRET_REFRESH_KEY=your-refresh-secret-key-change-in-production
+TOKEN_EXPIRE_TIME=1h
+TOKEN_REFRESH_EXPIRE_TIME=24h
+
+CRYPT_SALT=10
 ```
 
-To run only one of all test suites
-
+**Important:** Make sure the application is running before executing tests. If application isn't started, enter:
 ```
-npm run test -- <path to suite>
+npm run start:dev
 ```
 
-To run all test with authorization
+After application running open new terminal and follow next steps:
+
+1) To run all test with authorization
 
 ```
 npm run test:auth
 ```
 
-To run only specific test suite with authorization
+2) To run only specific test suite with authorization
 
 ```
 npm run test:auth -- <path to suite>
+```
+
+3) To run all test with refresh
+
+```
+npm run test:refresh
 ```
 
 ### Auto-fix and format
@@ -64,9 +74,3 @@ npm run lint
 ```
 npm run format
 ```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
